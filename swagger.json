@@ -1,0 +1,1267 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Express Node.js API with MongoDB",
+    "description": "This is a sample API for an Express Node.js application",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3002/api/v1",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/categories": {
+      "get": {
+        "summary": "Get a list of categories",
+        "description": "Retrieve a list of categories with pagination support",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageSize",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNo",
+            "description": "Page number",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new category",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "get": {
+        "summary": "Get a category by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the category to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a category by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the category to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Category could not be updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a category by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the category to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/get/count": {
+      "get": {
+        "summary": "Get the count of categories",
+        "responses": {
+          "200": {
+            "description": "Count retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryCount"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "summary": "Get all products",
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid category or product data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Get a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the product",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the product",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid category or product data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the product",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "The product is completely deleted."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "summary": "Get all orders",
+        "responses": {
+          "200": {
+            "description": "List of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new order",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid order data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "summary": "Get an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an order status by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid order data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the order",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "The order is completely deleted."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid order ID"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/get/totalSales": {
+      "get": {
+        "summary": "Get total sales amount",
+        "responses": {
+          "200": {
+            "description": "Total sales amount",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalSales": {
+                      "type": "number",
+                      "example": 1000.5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error getting total sales amount"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/get/count": {
+      "get": {
+        "summary": "Get total order count",
+        "responses": {
+          "200": {
+            "description": "Total order count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "number",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/get/userOrder/{userId}": {
+      "get": {
+        "summary": "Get orders by user ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders by user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/get/count": {
+      "get": {
+        "summary": "Get total user count",
+        "responses": {
+          "200": {
+            "description": "Total user count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "number",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get a user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Invalid user data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "user is authenticated"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDdlMGIyMTg5NDJhYzcwNDk5NjBhZmIiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjYxOTY4NjY5LCJleHAiOjE2NjE5Njk4Njl9.k23RPfROa13ogFsyOv-Esx-8Oxfg04mFJZvfdiKbDxU"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Category": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "NewCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "CategoryCount": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "name": {
+            "type": "string",
+            "example": "Product 1"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of Product 1"
+          },
+          "richDescription": {
+            "type": "string",
+            "example": "Rich description of Product 1"
+          },
+          "image": {
+            "type": "string",
+            "example": "product1.jpg"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Brand 1"
+          },
+          "price": {
+            "type": "number",
+            "example": 99.99
+          },
+          "category": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "countInStock": {
+            "type": "number",
+            "example": 10
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.5
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "example": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-04-21T11:23:10.760Z"
+          }
+        }
+      },
+      "NewProduct": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Product 1"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of Product 1"
+          },
+          "richDescription": {
+            "type": "string",
+            "example": "Rich description of Product 1"
+          },
+          "image": {
+            "type": "string",
+            "example": "product1.jpg"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Brand 1"
+          },
+          "price": {
+            "type": "number",
+            "example": 99.99
+          },
+          "category": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "countInStock": {
+            "type": "number",
+            "example": 10
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.5
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "example": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-04-21T11:23:10.760Z"
+          }
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Product 1"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of Product 1"
+          },
+          "richDescription": {
+            "type": "string",
+            "example": "Rich description of Product 1"
+          },
+          "image": {
+            "type": "string",
+            "example": "product1.jpg"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Brand 1"
+          },
+          "price": {
+            "type": "number",
+            "example": 99.99
+          },
+          "category": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "countInStock": {
+            "type": "number",
+            "example": 10
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.5
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "example": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-04-21T11:23:10.760Z"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            }
+          },
+          "shippingAddress1": {
+            "type": "string",
+            "example": "123 Main St"
+          },
+          "shippingAddress2": {
+            "type": "string",
+            "example": "Apt 101"
+          },
+          "city": {
+            "type": "string",
+            "example": "New York"
+          },
+          "country": {
+            "type": "string",
+            "example": "USA"
+          },
+          "zip": {
+            "type": "string",
+            "example": "10001"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123-456-7890"
+          },
+          "status": {
+            "type": "string",
+            "example": "Pending"
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 99.99
+          },
+          "user": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "dateOrdered": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-04-21T11:23:10.760Z"
+          }
+        }
+      },
+      "NewOrder": {
+        "type": "object",
+        "properties": {
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewOrderItem"
+            }
+          },
+          "shippingAddress1": {
+            "type": "string",
+            "example": "123 Main St"
+          },
+          "shippingAddress2": {
+            "type": "string",
+            "example": "Apt 101"
+          },
+          "city": {
+            "type": "string",
+            "example": "New York"
+          },
+          "country": {
+            "type": "string",
+            "example": "USA"
+          },
+          "zip": {
+            "type": "string",
+            "example": "10001"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123-456-7890"
+          },
+          "status": {
+            "type": "string",
+            "example": "Pending"
+          },
+          "user": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          }
+        }
+      },
+      "UpdateOrderStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Delivered"
+          }
+        }
+      },
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "product": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 2
+          }
+        }
+      },
+      "NewOrderItem": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 2
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "607ebcb31703622ef09e6097"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123-456-7890"
+          },
+          "country": {
+            "type": "string",
+            "example": "USA"
+          }
+        }
+      },
+      "NewUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123-456-7890"
+          },
+          "country": {
+            "type": "string",
+            "example": "USA"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
