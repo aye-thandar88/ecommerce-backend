@@ -7,7 +7,6 @@ function authJwt() {
   return jwt({
     secret: secret,
     algorithms: ["HS256"],
-    // isRevoked: isRevoked,
   }).unless({
     path: [
       { url: /\/public\/assets(.*)/, methods: ["GET", "OPTIONS"] },
@@ -17,27 +16,9 @@ function authJwt() {
       { url: /^\/api-docs/ },
       `${api}/users/login`,
       `${api}/users/register`,
+      `${api}/users/refresh-token`,
     ],
   });
-}
-
-async function isRevoked(req, payload, done) {
-  const payloadData = { ...payload };
-
-  const currentTimestamp = Math.floor(Date.now() / 1000); // Current Unix timestamp in seconds
-  const expirationTimestamp = payloadData.payload.exp; // Expiration timestamp from the JWT payload
-
-  // Calculate the difference between the current time and the expiration time
-  const timeDifference = expirationTimestamp - currentTimestamp;
-
-  if (payload && payloadData.payload.isAdmin === false) {
-  if (timeDifference <= 1800) {
-    // return done(null, true);
-    return true;
-  }
-  }
-  // return done();
-  return false;
 }
 
 module.exports = authJwt;
