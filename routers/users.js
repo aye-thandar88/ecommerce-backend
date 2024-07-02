@@ -7,7 +7,7 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../helpers/generate-token");
-const Token = require("../models/token");
+
 let refreshTokens = [];
 
 //Get count of users
@@ -121,14 +121,11 @@ router.post(`/register`, async (req, res) => {
 
 router.post(`/login`, async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-  const secret = process.env.TOKEN_SECRET;
-
-  console.log("refresh", refreshTokens);
 
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "The user is not found",
+      message: "The user is not found. Please register!",
     });
   }
 
@@ -151,58 +148,24 @@ router.post(`/login`, async (req, res) => {
 router.post("/logout", (req, res) => {
   const { token } = req.body;
   refreshTokens = refreshTokens.filter((t) => t !== token);
-  return res.status(204).send({ message: "User has logged out" });
+  return res.status(204).status({ message: "User has logged out" });
 });
-
-// router.post("/refresh-token", async (req, res) => {
-//   const { token } = req.body;
-
-//   if (!token) return res.status(401).send("User is unauthorized");
-
-//   try {
-//     const storedToken = await Token.findOne({ token });
-//     console.log("storedToken",storedToken)
-//     if (!storedToken) return res.status(404).send("Invalid refresh token");
-
-//     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
-//       if (err) return res.status(403).send("Invalid refresh token");
-
-//       const newAccessToken = generateAccessToken(user);
-//       const newRefreshToken = generateRefreshToken(user);
-
-//       // Update the stored refresh token
-//       storedToken.token = newRefreshToken;
-//       storedToken.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-//       await storedToken.save();
-
-//       return res
-//         .status(200)
-//         .json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
-//     });
-//   } catch (error) {
-//     return res.status(500).send("Internal Server Error");
-//   }
-// });
 
 router.post("/refresh-token", (req, res) => {
   const { token } = req.body;
   const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
   if (!token) return res.status(401).send("User is unauthorized");
-  if (!refreshTokens.includes(token))
+
+  if (!refreshTokens.includes(token)) {
     return res.status(403).send("Invalid refresh token");
+  }
 
   jwt.verify(token, refreshTokenSecret, (err, user) => {
     if (err) return res.status(404).send("Invalid refresh token");
 
-    const secret = process.env.TOKEN_SECRET;
-    const newAccessToken = jwt.sign(
-      { userId: user.userId, isAdmin: user.isAdmin },
-      secret,
-      {
-        expiresIn: "3m",
-      }
-    );
+    const newAccessToken = generateAccessToken(user);
+
     return res.status(200).json({ accessToken: newAccessToken });
   });
 });
