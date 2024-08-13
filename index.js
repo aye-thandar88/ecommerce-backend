@@ -9,6 +9,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 const errorHandler = require("./helpers/error-handler");
 const path = require("path");
+const setupSocket = require("./socket");
 
 require("dotenv/config");
 const PORT = 3002;
@@ -52,6 +53,8 @@ mongoose
   });
 
 //Server setup
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running http://localhost:${PORT}`);
 });
+
+setupSocket(server);
